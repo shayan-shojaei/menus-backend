@@ -72,4 +72,8 @@ export class UserService {
       password: hashedPassword,
     });
   }
+
+  async addUserBranch(user: ObjectId, branch: ObjectId): Promise<void> {
+    await this.userRepository.addUserBranch(user, branch);
+  }
 }

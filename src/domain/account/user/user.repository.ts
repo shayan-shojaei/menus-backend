@@ -63,4 +63,17 @@ export class UserRepository {
 
     return user;
   }
+
+  async addUserBranch(user: ObjectId, branch: ObjectId): Promise<void> {
+    await this.userCollection.updateOne(
+      {
+        _id: user,
+      },
+      {
+        $push: {
+          branches: branch,
+        },
+      },
+    );
+  }
 }
