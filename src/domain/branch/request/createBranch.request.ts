@@ -9,8 +9,10 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { CreateBranchLocationRequest } from '@domain/branch/request';
+import { IsObjectId } from '@common/validators';
+import { toObjectId } from '@common/transformers';
 
 export class CreateBranchRequest {
   @IsString()
@@ -23,7 +25,8 @@ export class CreateBranchRequest {
   location: CreateBranchLocationRequest;
 
   @IsOptional()
-  @IsMongoId()
+  @IsObjectId()
+  @Transform(toObjectId)
   menuGroup?: ObjectId;
 
   @IsOptional()

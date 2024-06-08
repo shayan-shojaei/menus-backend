@@ -5,13 +5,14 @@ import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Request } from 'express';
 import { JWTHelper } from '@common/helper/jwt.helper';
 import { ObjectId } from 'mongodb';
+import { AuthenticationService } from '@domain/account/authentication/authentication.service';
 
 export const AUTHENTICATED_USER = 'AUTHENTICATED_USER';
 
 @UseGuards()
 export class AuthenticationGuard implements CanActivate {
   constructor(
-    private readonly userService: UserService,
+    private readonly authenticationService: AuthenticationService,
     @InjectRedis()
     private readonly redis: Redis,
   ) {}
@@ -37,7 +38,9 @@ export class AuthenticationGuard implements CanActivate {
       return false;
     }
 
-    const user = await this.userService.find(new ObjectId(userId));
+    const user = await this.authenticationService.findUser(
+      new ObjectId(userId),
+    );
 
     if (!user) {
       return false;

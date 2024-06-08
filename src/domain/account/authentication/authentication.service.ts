@@ -8,6 +8,7 @@ import { CreateUserRequest } from '@domain/account/user/request';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 import { User } from '@domain/account/user/entity';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class AuthenticationService {
@@ -54,5 +55,9 @@ export class AuthenticationService {
   private async cacheToken(user: User, token: string): Promise<void> {
     // Cache token
     await this.redis.hset(`auth:token`, token, user._id.toString());
+  }
+
+  async findUser(id: ObjectId): Promise<User> {
+    return this.userService.find(id);
   }
 }
