@@ -18,8 +18,10 @@ import { ParseObjectIdPipe } from '@common/pipes';
 import { ObjectId } from 'mongodb';
 import { CreateMenuItemRequest } from '@domain/menu/menuItem/request';
 import { AuthenticationGuard } from '@common/guards';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller(MenuItemController.path)
+@ApiTags(MenuItemController.path)
 @UseGuards(AuthenticationGuard)
 export class MenuItemController {
   static path = 'menu/items';

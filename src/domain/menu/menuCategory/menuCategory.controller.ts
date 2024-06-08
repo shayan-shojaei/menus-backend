@@ -21,8 +21,10 @@ import {
 } from '@domain/menu/menuCategory/response';
 import { CreateMenuCategoryRequest } from '@domain/menu/menuCategory/request';
 import { AuthenticationGuard } from '@common/guards';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller(MenuCategoryController.path)
+@ApiTags(MenuCategoryController.path)
 @UseGuards(AuthenticationGuard)
 export class MenuCategoryController {
   static path = 'menu/categories';

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Patch,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from '@domain/account/user/user.service';
 import { TransformPlainToInstance } from 'class-transformer';
 import {
@@ -11,8 +19,10 @@ import {
   ChangePasswordRequest,
   UpdateUserRequest,
 } from '@domain/account/user/request';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller(UserController.path)
+@ApiTags(UserController.path)
 @UseGuards(AuthenticationGuard)
 export class UserController {
   static path = 'account/users';
@@ -20,6 +30,10 @@ export class UserController {
 
   @Get('me')
   @TransformPlainToInstance(DetailedUserResponse)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: DetailedUserResponse,
+  })
   async me(
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<DetailedUserResponse> {
@@ -28,6 +42,10 @@ export class UserController {
 
   @Put('me')
   @TransformPlainToInstance(GeneralUserResponse)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GeneralUserResponse,
+  })
   async updateMe(
     @CurrentUser() user: AuthenticatedUser,
     @Body() updateUserRequest: UpdateUserRequest,
@@ -37,6 +55,10 @@ export class UserController {
 
   @Patch('me/password')
   @TransformPlainToInstance(GeneralUserResponse)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GeneralUserResponse,
+  })
   async updatePassword(
     @CurrentUser() user: AuthenticatedUser,
     @Body() changePasswordRequest: ChangePasswordRequest,

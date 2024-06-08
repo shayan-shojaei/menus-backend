@@ -17,8 +17,10 @@ import { AuthenticatedUser, CurrentUser } from '@common/decorators';
 import { CreateBranchRequest } from '@domain/branch/request';
 import { ObjectId } from 'mongodb';
 import { ParseObjectIdPipe } from '@common/pipes';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller(BranchController.path)
+@ApiTags(BranchController.path)
 @UseGuards(AuthenticationGuard)
 export class BranchController {
   static path = 'branches';

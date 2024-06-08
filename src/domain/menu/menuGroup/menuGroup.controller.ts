@@ -21,8 +21,10 @@ import { CreateMenuGroupRequest } from '@domain/menu/menuGroup/request';
 import { ParseObjectIdPipe } from '@common/pipes';
 import { ObjectId } from 'mongodb';
 import { AuthenticationGuard } from '@common/guards';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller(MenuGroupController.path)
+@ApiTags(MenuGroupController.path)
 @UseGuards(AuthenticationGuard)
 export class MenuGroupController {
   static path = 'menu/groups';

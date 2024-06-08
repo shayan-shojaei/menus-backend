@@ -4,8 +4,14 @@ import { TransformPlainToInstance } from 'class-transformer';
 import { LoginResponse } from '@domain/account/authentication/response';
 import { LoginRequest } from '@domain/account/authentication/request';
 import { CreateUserRequest } from '@domain/account/user/request';
+import {
+  ApiNotImplementedResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @Controller(AuthenticationController.path)
+@ApiTags(AuthenticationController.path)
 export class AuthenticationController {
   static path = 'account/auth';
 
@@ -14,6 +20,10 @@ export class AuthenticationController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @TransformPlainToInstance(LoginResponse)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: LoginResponse,
+  })
   async login(@Body() loginRequest: LoginRequest): Promise<LoginResponse> {
     return await this.authenticationService.login(loginRequest);
   }
@@ -21,6 +31,10 @@ export class AuthenticationController {
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
   @TransformPlainToInstance(LoginResponse)
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: LoginResponse,
+  })
   async signUp(
     @Body() createUserRequest: CreateUserRequest,
   ): Promise<LoginResponse> {
@@ -29,6 +43,7 @@ export class AuthenticationController {
 
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNotImplementedResponse()
   async logout(): Promise<void> {
     throw new Error('Not implemented');
   }
