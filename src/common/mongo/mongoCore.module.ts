@@ -1,0 +1,159 @@
+import {
+  DynamicModule,
+  Global,
+  Inject,
+  Module,
+  OnApplicationShutdown,
+  Provider,
+} from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { MongoClient, MongoClientOptions } from 'mongodb';
+import {
+  MongoModuleAsyncOptions,
+  MongoModuleOptions,
+  MongoOptionsFactory,
+} from './mongoOptions.interface';
+import {
+  DEFAULT_MONGO_CONNECTION_NAME,
+  MONGO_CONNECTION_NAME,
+  MONGO_MODULE_OPTIONS,
+} from './mongo.constants';
+import { getClientToken, getDbToken } from './mongo.util';
+
+@Global()
+@Module({})
+export class MongoCoreModule implements OnApplicationShutdown {
+  constructor(
+    @Inject(MONGO_CONNECTION_NAME) private readonly connectionName: string,
+    private readonly moduleRef: ModuleRef,
+  ) {}
+
+  static forRoot(
+    uri: string,
+    dbName: string,
+    clientOptions?: MongoClientOptions,
+    connectionName?: string,
+  ): DynamicModule {
+    const connectionNameProvider = {
+      provide: MONGO_CONNECTION_NAME,
+      useValue: connectionName ?? DEFAULT_MONGO_CONNECTION_NAME,
+    };
+
+    const clientProvider = {
+      provide: getClientToken(connectionName),
+      useFactory: async () => {
+        const client = new MongoClient(uri, clientOptions);
+        return await client.connect();
+      },
+    };
+
+    const dbProvider = {
+      provide: getDbToken(connectionName),
+      useFactory: (client: MongoClient) => client.db(dbName),
+      inject: [getClientToken(connectionName)],
+    };
+
+    return {
+      module: MongoCoreModule,
+      providers: [connectionNameProvider, clientProvider, dbProvider],
+      exports: [clientProvider, dbProvider],
+    };
+  }
+
+  static forRootAsync(options: MongoModuleAsyncOptions): DynamicModule {
+    const mongoConnectionName =
+      options.connectionName ?? DEFAULT_MONGO_CONNECTION_NAME;
+
+    const connectionNameProvider = {
+      provide: MONGO_CONNECTION_NAME,
+      useValue: mongoConnectionName,
+    };
+
+    const clientProvider = {
+      provide: getClientToken(mongoConnectionName),
+      useFactory: async (mongoModuleOptions: MongoModuleOptions) => {
+        const { uri, clientOptions } = mongoModuleOptions;
+        const client = new MongoClient(uri, clientOptions);
+        return await client.connect();
+      },
+      inject: [MONGO_MODULE_OPTIONS],
+    };
+
+    const dbProvider = {
+      provide: getDbToken(mongoConnectionName),
+      useFactory: (
+        mongoModuleOptions: MongoModuleOptions,
+        client: MongoClient,
+      ) => client.db(mongoModuleOptions.dbName),
+      inject: [MONGO_MODULE_OPTIONS, getClientToken(mongoConnectionName)],
+    };
+
+    const asyncProviders = this.createAsyncProviders(options);
+
+    return {
+      module: MongoCoreModule,
+      imports: options.imports,
+      providers: [
+        ...asyncProviders,
+        clientProvider,
+        dbProvider,
+        connectionNameProvider,
+      ],
+      exports: [clientProvider, dbProvider],
+    };
+  }
+
+  async onApplicationShutdown() {
+    const client: MongoClient = this.moduleRef.get<any>(
+      getClientToken(this.connectionName),
+    );
+
+    if (client) await client.close();
+  }
+
+  private static createAsyncProviders(
+    options: MongoModuleAsyncOptions,
+  ): Provider[] {
+    if (options.useExisting || options.useFactory) {
+      return [this.createAsyncOptionsProvider(options)];
+    } else if (options.useClass) {
+      return [
+        this.createAsyncOptionsProvider(options),
+        {
+          provide: options.useClass,
+          useClass: options.useClass,
+        },
+      ];
+    } else {
+      return [];
+    }
+  }
+
+  private static createAsyncOptionsProvider(
+    options: MongoModuleAsyncOptions,
+  ): Provider {
+    if (options.useFactory) {
+      return {
+        provide: MONGO_MODULE_OPTIONS,
+        useFactory: options.useFactory,
+        inject: options.inject ?? [],
+      };
+    } else if (options.useExisting) {
+      return {
+        provide: MONGO_MODULE_OPTIONS,
+        useFactory: async (optionsFactory: MongoOptionsFactory) =>
+          await optionsFactory.createMongoOptions(),
+        inject: [options.useExisting],
+      };
+    } else if (options.useClass) {
+      return {
+        provide: MONGO_MODULE_OPTIONS,
+        useFactory: async (optionsFactory: MongoOptionsFactory) =>
+          await optionsFactory.createMongoOptions(),
+        inject: [options.useClass],
+      };
+    } else {
+      throw new Error('Invalid MongoModule options');
+    }
+  }
+}
