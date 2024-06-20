@@ -1,9 +1,7 @@
-import { Branch, BranchLocation } from '@domain/branch/entity';
 import { ObjectId } from 'mongodb';
 import {
   IsArray,
   IsDefined,
-  IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,

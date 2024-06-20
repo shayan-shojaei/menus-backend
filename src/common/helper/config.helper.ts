@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import * as process from 'process';
+import * as path from 'node:path';
 
 dotenv.config();
 
@@ -17,4 +18,5 @@ export const Config = {
     JWT_SECRET: process.env.JWT_SECRET,
     JWT_EXPIRATION_DAYS: process.env.JWT_EXPIRATION_DAYS || '7',
   },
+  UploadsFolder: path.join(process.env.PWD, 'uploads'),
 };
