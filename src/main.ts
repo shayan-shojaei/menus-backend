@@ -17,11 +17,7 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new FormatResponseInterceptor());
 
-  app.enableCors({
-    allowedHeaders: '*',
-    origin: '*',
-    credentials: true,
-  });
+  app.enableCors();
 
   const config = new DocumentBuilder()
     .addBearerAuth()
