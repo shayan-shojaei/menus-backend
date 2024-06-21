@@ -37,6 +37,10 @@ export class BranchService {
     return this.branchRepository.findOne(id);
   }
 
+  async findBranch(id: ObjectId): Promise<Branch> {
+    return this.branchRepository.findOne(id);
+  }
+
   async createBranch(
     authenticatedUser: AuthenticatedUser,
     createBranchRequest: CreateBranchRequest,

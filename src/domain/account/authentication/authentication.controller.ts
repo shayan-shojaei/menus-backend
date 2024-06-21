@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { AuthenticationService } from '@domain/account/authentication/authentication.service';
 import { TransformPlainToInstance } from 'class-transformer';
 import { LoginResponse } from '@domain/account/authentication/response';
@@ -9,6 +16,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Request } from 'express';
 
 @Controller(AuthenticationController.path)
 @ApiTags(AuthenticationController.path)
@@ -25,7 +33,7 @@ export class AuthenticationController {
     type: LoginResponse,
   })
   async login(@Body() loginRequest: LoginRequest): Promise<LoginResponse> {
-    return await this.authenticationService.login(loginRequest);
+    return this.authenticationService.login(loginRequest);
   }
 
   @Post('signup')
@@ -38,13 +46,13 @@ export class AuthenticationController {
   async signUp(
     @Body() createUserRequest: CreateUserRequest,
   ): Promise<LoginResponse> {
-    return await this.authenticationService.signUp(createUserRequest);
+    return this.authenticationService.signUp(createUserRequest);
   }
 
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNotImplementedResponse()
-  async logout(): Promise<void> {
-    throw new Error('Not implemented');
+  async logout(@Req() request: Request): Promise<void> {
+    return this.authenticationService.logout(request);
   }
 }

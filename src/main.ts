@@ -17,7 +17,11 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new FormatResponseInterceptor());
 
-  app.enableCors();
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: '*',
+  });
 
   const config = new DocumentBuilder()
     .addBearerAuth()

@@ -21,7 +21,6 @@ import { ApiTags } from '@nestjs/swagger';
 
 @Controller(BranchController.path)
 @ApiTags(BranchController.path)
-@UseGuards(AuthenticationGuard)
 export class BranchController {
   static path = 'branches';
 
@@ -29,6 +28,7 @@ export class BranchController {
 
   @Get()
   @TransformPlainToInstance(GeneralBranchResponse)
+  @UseGuards(AuthenticationGuard)
   async getBranches(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
   ): Promise<GeneralBranchResponse[]> {
@@ -38,6 +38,7 @@ export class BranchController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @TransformPlainToInstance(GeneralBranchResponse)
+  @UseGuards(AuthenticationGuard)
   async createBranch(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Body() createBranchRequest: CreateBranchRequest,
@@ -50,6 +51,7 @@ export class BranchController {
 
   @Put(':id')
   @TransformPlainToInstance(GeneralBranchResponse)
+  @UseGuards(AuthenticationGuard)
   async updateBranch(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Param('id', new ParseObjectIdPipe()) branchId: ObjectId,
@@ -64,10 +66,19 @@ export class BranchController {
 
   @Get(':id')
   @TransformPlainToInstance(GeneralBranchResponse)
-  async getBranch(
+  @UseGuards(AuthenticationGuard)
+  async findOne(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Param('id', new ParseObjectIdPipe()) branchId: ObjectId,
   ): Promise<GeneralBranchResponse> {
     return this.branchService.findOne(authenticatedUser, branchId);
+  }
+
+  @Get(':id/public')
+  @TransformPlainToInstance(GeneralBranchResponse)
+  async findBranch(
+    @Param('id', new ParseObjectIdPipe()) branchId: ObjectId,
+  ): Promise<GeneralBranchResponse> {
+    return this.branchService.findBranch(branchId);
   }
 }

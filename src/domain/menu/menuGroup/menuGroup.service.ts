@@ -17,13 +17,16 @@ export class MenuGroupService {
     return this.menuGroupRepository.findUserMenuGroups(authenticatedUser._id);
   }
 
-  async findOne(
+  async findOnePure(
     authenticatedUser: AuthenticatedUser,
     id: ObjectId,
   ): Promise<MenuGroup> {
+    return this.menuGroupRepository.findOnePure(id, authenticatedUser._id);
+  }
+
+  async findOne(id: ObjectId): Promise<MenuGroup> {
     const menuGroup = (await this.menuGroupRepository.findOne(
       id,
-      authenticatedUser._id,
     )) as MenuGroup & { lookedUpCategories: MenuCategory[] };
 
     menuGroup.categories = menuGroup.categories.map((category) => {

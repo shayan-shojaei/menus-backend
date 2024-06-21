@@ -9,6 +9,7 @@ import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 import { User } from '@domain/account/user/entity';
 import { ObjectId } from 'mongodb';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthenticationService {
@@ -59,5 +60,15 @@ export class AuthenticationService {
 
   async findUser(id: ObjectId): Promise<User> {
     return this.userService.find(id);
+  }
+
+  async logout(request: Request): Promise<void> {
+    const token = request.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      throw new BadRequestException('Token not found');
+    }
+
+    await this.redis.hdel(`auth:token`, token);
   }
 }

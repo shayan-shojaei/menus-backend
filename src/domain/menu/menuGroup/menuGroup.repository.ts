@@ -18,13 +18,22 @@ export class MenuGroupRepository {
       .toArray();
   }
 
-  async findOne(id: ObjectId, user: ObjectId): Promise<MenuGroup> {
+  async findOnePure(id: ObjectId, user: ObjectId): Promise<MenuGroup> {
+    return this.menuGroupCollection.findOne({
+      $match: {
+        _id: id,
+        user: user,
+        deletedAt: null,
+      },
+    });
+  }
+
+  async findOne(id: ObjectId): Promise<MenuGroup> {
     return this.menuGroupCollection
       .aggregate<MenuGroup>([
         {
           $match: {
             _id: id,
-            user: user,
             deletedAt: null,
           },
         },

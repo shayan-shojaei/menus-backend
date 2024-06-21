@@ -25,7 +25,6 @@ import { ApiTags } from '@nestjs/swagger';
 
 @Controller(MenuGroupController.path)
 @ApiTags(MenuGroupController.path)
-@UseGuards(AuthenticationGuard)
 export class MenuGroupController {
   static path = 'menu/groups';
 
@@ -33,6 +32,7 @@ export class MenuGroupController {
 
   @Get()
   @TransformPlainToInstance(GeneralMenuGroupResponse)
+  @UseGuards(AuthenticationGuard)
   async findAll(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
   ): Promise<GeneralMenuGroupResponse[]> {
@@ -40,17 +40,19 @@ export class MenuGroupController {
   }
 
   @Get(':id')
-  @TransformPlainToInstance(DetailedMenuGroupResponse)
+  @TransformPlainToInstance(GeneralMenuGroupResponse)
+  @UseGuards(AuthenticationGuard)
   async findOne(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Param('id', new ParseObjectIdPipe()) id: ObjectId,
-  ): Promise<DetailedMenuGroupResponse> {
-    return this.menuGroupService.findOne(authenticatedUser, id);
+  ): Promise<GeneralMenuGroupResponse> {
+    return this.menuGroupService.findOnePure(authenticatedUser, id);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @TransformPlainToInstance(GeneralMenuGroupResponse)
+  @UseGuards(AuthenticationGuard)
   async create(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Body() createMenuGroupRequest: CreateMenuGroupRequest,
@@ -63,6 +65,7 @@ export class MenuGroupController {
 
   @Put(':id')
   @TransformPlainToInstance(GeneralMenuGroupResponse)
+  @UseGuards(AuthenticationGuard)
   async updateOne(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Param('id', new ParseObjectIdPipe()) id: ObjectId,
@@ -77,10 +80,19 @@ export class MenuGroupController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthenticationGuard)
   async deleteOne(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Param('id', new ParseObjectIdPipe()) id: ObjectId,
   ): Promise<void> {
     return this.menuGroupService.delete(authenticatedUser, id);
+  }
+
+  @Get(':id/public')
+  @TransformPlainToInstance(DetailedMenuGroupResponse)
+  async customerFindOne(
+    @Param('id', new ParseObjectIdPipe()) id: ObjectId,
+  ): Promise<DetailedMenuGroupResponse> {
+    return this.menuGroupService.findOne(id);
   }
 }
