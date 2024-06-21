@@ -18,9 +18,9 @@ async function bootstrap() {
   app.useGlobalInterceptors(new FormatResponseInterceptor());
 
   app.enableCors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: '*',
+    origin: '*',
+    credentials: true,
   });
 
   const config = new DocumentBuilder()
