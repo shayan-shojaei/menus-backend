@@ -31,8 +31,8 @@ export class MenuGroupController {
   constructor(private readonly menuGroupService: MenuGroupService) {}
 
   @Get()
-  @TransformPlainToInstance(GeneralMenuGroupResponse)
   @UseGuards(AuthenticationGuard)
+  @TransformPlainToInstance(GeneralMenuGroupResponse)
   async findAll(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
   ): Promise<GeneralMenuGroupResponse[]> {
@@ -40,8 +40,8 @@ export class MenuGroupController {
   }
 
   @Get(':id')
-  @TransformPlainToInstance(GeneralMenuGroupResponse)
   @UseGuards(AuthenticationGuard)
+  @TransformPlainToInstance(GeneralMenuGroupResponse)
   async findOne(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Param('id', new ParseObjectIdPipe()) id: ObjectId,
@@ -51,8 +51,8 @@ export class MenuGroupController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @TransformPlainToInstance(GeneralMenuGroupResponse)
   @UseGuards(AuthenticationGuard)
+  @TransformPlainToInstance(GeneralMenuGroupResponse)
   async create(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Body() createMenuGroupRequest: CreateMenuGroupRequest,
@@ -64,8 +64,8 @@ export class MenuGroupController {
   }
 
   @Put(':id')
-  @TransformPlainToInstance(GeneralMenuGroupResponse)
   @UseGuards(AuthenticationGuard)
+  @TransformPlainToInstance(GeneralMenuGroupResponse)
   async updateOne(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Param('id', new ParseObjectIdPipe()) id: ObjectId,
@@ -79,8 +79,8 @@ export class MenuGroupController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticationGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteOne(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Param('id', new ParseObjectIdPipe()) id: ObjectId,

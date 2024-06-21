@@ -27,8 +27,8 @@ export class BranchController {
   constructor(private readonly branchService: BranchService) {}
 
   @Get()
-  @TransformPlainToInstance(GeneralBranchResponse)
   @UseGuards(AuthenticationGuard)
+  @TransformPlainToInstance(GeneralBranchResponse)
   async getBranches(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
   ): Promise<GeneralBranchResponse[]> {
@@ -37,8 +37,8 @@ export class BranchController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @TransformPlainToInstance(GeneralBranchResponse)
   @UseGuards(AuthenticationGuard)
+  @TransformPlainToInstance(GeneralBranchResponse)
   async createBranch(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Body() createBranchRequest: CreateBranchRequest,
@@ -50,8 +50,8 @@ export class BranchController {
   }
 
   @Put(':id')
-  @TransformPlainToInstance(GeneralBranchResponse)
   @UseGuards(AuthenticationGuard)
+  @TransformPlainToInstance(GeneralBranchResponse)
   async updateBranch(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Param('id', new ParseObjectIdPipe()) branchId: ObjectId,
@@ -65,8 +65,8 @@ export class BranchController {
   }
 
   @Get(':id')
-  @TransformPlainToInstance(GeneralBranchResponse)
   @UseGuards(AuthenticationGuard)
+  @TransformPlainToInstance(GeneralBranchResponse)
   async findOne(
     @CurrentUser() authenticatedUser: AuthenticatedUser,
     @Param('id', new ParseObjectIdPipe()) branchId: ObjectId,
